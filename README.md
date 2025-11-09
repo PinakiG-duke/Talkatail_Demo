@@ -39,3 +39,130 @@ Building this project in a short period presented significant technical hurdles:
 
 - **Environment Discrepancies:** We faced challenges migrating frontend code developed in Repl to a Flask environment, which highlighted the importance of consistent development pipelines.
 
+## 🩺 Health Scoring Model
+
+A lightweight logistic regression model that estimates a pet’s probability of being healthy based on its vital signs and behavioral indicators.
+This model is currently trained on synthetic data for demonstration and UI testing inside the Pet Health Timeseries App.
+
+## 📘 Overview
+
+The model produces:
+
+health_proba → Probability (0–1) that the pet is healthy
+
+health_label → "Healthy" or "Not healthy" depending on a 0.5 threshold
+
+The output integrates with the Streamlit dashboard (app_health_timeseries_plotly.py) for visualization and monitoring.
+
+This is to give a demo of an output that would eventually be part of the app
+
+## ⚙️ Model Architecture
+Component	Description
+Scaler	StandardScaler (feature normalization)
+Estimator	Logistic Regression (max_iter=1000)
+Output	predict_proba(X)[:,1] → Health probability
+
+## 🧠 Training Setup
+
+Data: Synthetic, generated via synth(n=4000)
+
+Split: 80% train / 20% test (stratified)
+
+Evaluation Metric: ROC AUC on holdout set
+
+Saved Artifact: models/health_lr.joblib
+
+Threshold: 0.5 for binary classification
+
+## 📊 Features Used
+Category	Features
+Demographics	age, weight_kg
+Vitals	hr, rr, temp_c, sbp, dbp, spo2
+Behavioral	activity_level, appetite_score
+Symptoms	has_vomiting, has_diarrhea
+
+All inputs must be numeric. Symptom indicators are binary (0 or 1).
+
+## 🧩 Synthetic Label Generation
+
+The training label (healthy ∈ {0,1}) is created from a rule-based score:
+score =
+  + 0.9*(SpO2 - 92)
+  - 0.5*max(0, |HR - 95| - 20)
+  - 0.6*max(0, |RR - 22| - 8)
+  - 4.5*max(0, |TempC - 38.6| - 0.7)
+  - 0.03*max(0, SBP - 160)
+  - 0.04*max(0, 90 - DBP)
+  + 1.5*ActivityLevel
+  + 1.2*AppetiteScore
+  - 3.0*has_vomiting
+  - 2.5*has_diarrhea
+
+After adding Gaussian noise N(0,2), any record with score > 2.5 is labeled Healthy (1), else Not healthy (0).
+
+## 🧮 Inference Pipeline
+
+1. Load or Train
+
+If models/health_lr.joblib exists → load it.
+
+Otherwise → synthesize data → train → save artifact.
+
+2. Ingest CSV
+
+Validate schema and convert feature columns to numeric types.
+
+3. Predict
+
+health_proba = model.predict_proba(X)[:,1]
+health_label = np.where(health_proba >= 0.5, "Healthy", "Not healthy")
+
+4. Write-back
+
+Append predictions to the CSV and create a timestamped backup.
+
+5. Visualize
+
+Streamlit dashboard plots:
+
+Combined vitals (HR, RR, Temp, SBP, DBP)
+
+Activity Level
+
+Appetite Score
+
+Overall Health Score trend
+
+## 📤 Outputs
+
+| Column             | Description                               |
+| ------------------ | ----------------------------------------- |
+| **`health_proba`** | Probability (0–1) that the pet is healthy |
+| **`health_label`** | `"Healthy"` or `"Not healthy"`            |
+
+
+## ⚠️ Caveats
+
+The model is not medically validated — labels are synthetic and approximate.
+
+We have used it for testing and visualization only until trained on real data.
+
+We will replace synth() with genuine clinical or sensor-based datasets before deployment.
+
+## 🚀 Next Steps
+
+Train on real labeled veterinary data.
+
+Add temporal features (e.g., short-term HR or Temp deltas).
+
+Calibrate probabilities
+
+Add drift monitoring and model card documentation.
+
+## 📁 Files
+
+models/health_lr.joblib       # saved logistic regression pipeline
+app/app_health_timeseries_plotly.py  # Streamlit UI that uses this model
+data/vitals/pet_vitals_test.csv      # example dataset for predictions
+docs/model_card.md                   # model documentation
+
