@@ -48,3 +48,5 @@ This project is a testament to the team's ability to apply advanced machine lear
 - **Full-Stack Deployment:** Integrating a machine learning backend with a responsive web application.
 
 This work lays the groundwork for future advancements, including integration with Google Home and Alexa for real-time translation, and the potential for a "reverse translation" feature for two-way communication.
+
+
