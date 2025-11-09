@@ -39,14 +39,3 @@ Building this project in a short period presented significant technical hurdles:
 
 - **Environment Discrepancies:** We faced challenges migrating frontend code developed in Repl to a Flask environment, which highlighted the importance of consistent development pipelines.
 
-## 🚀 Accomplishments & Impact
-
-This project is a testament to the team's ability to apply advanced machine learning techniques to a novel problem. We successfully built a functional, end-to-end ML pipeline, showcasing a deep understanding of:
-
-- **Data Preparation & Feature Engineering:** Transforming raw audio into a usable format.
-- **Model Training & Evaluation:** Efficiently training a deep learning model with GPU acceleration.
-- **Full-Stack Deployment:** Integrating a machine learning backend with a responsive web application.
-
-This work lays the groundwork for future advancements, including integration with Google Home and Alexa for real-time translation, and the potential for a "reverse translation" feature for two-way communication.
-
-
