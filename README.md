@@ -1,4 +1,4 @@
-# BarkSpeak
+# BarkoTell
 
 A Deep Learning Solution for Canine Vocalization Analysis
 
